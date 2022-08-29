@@ -38,7 +38,7 @@ class NewPasswordController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        /* $request->validate([
             'token' => 'required',
             'email' => 'required|email',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
@@ -62,6 +62,37 @@ class NewPasswordController extends Controller
         // If the password was successfully reset, we will redirect the user back to
         // the application's home authenticated view. If there is an error we can
         // redirect them back to where they came from with their error message.
+        if ($status == Password::PASSWORD_RESET) {
+            return redirect()->route('login')->with('status', __($status));
+        }
+
+        throw ValidationException::withMessages([
+            'email' => [trans($status)],
+        ]); */
+
+        $loginField = filter_var($request->input('login'), FILTER_VALIDATE_EMAIL)? 'email' : 'username';
+
+        $request->merge([$loginField => $request->input('login')]);
+
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required_without:username|email|exists:users,email',
+            'username' => 'required_without:email|string|exists:users,username',
+            'password' => 'required', 'confirmed', Rules\Password::defaults(),
+        ]);
+
+        $status = Password::reset(
+            $request->only($loginField, 'password', 'password_confirmation', 'token'),
+            function ($user) use ($request) {
+                $user->forceFill([
+                    'password' => Hash::make($request->password),
+                    'remember_token' => Str::random(60),
+                ])->save();
+
+                event(new PasswordReset($user));
+            }
+        );
+
         if ($status == Password::PASSWORD_RESET) {
             return redirect()->route('login')->with('status', __($status));
         }
