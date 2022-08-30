@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->string('category');
             $table->string('description');
+            $table->string('image');            
+            $table->dateTime('datetime');
             $table->timestamps();
         });
     }

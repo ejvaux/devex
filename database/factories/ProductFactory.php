@@ -29,6 +29,8 @@ class ProductFactory extends Factory
             'name' => $this->faker->unique()->word(),        
             'category' => $this->faker->word(),
             'description' => $this->faker->sentence(),
+            'image' => $this->faker->imageUrl($width = 640, $height = 480,'cats'),
+            'datetime' => $this->faker->dateTime($max = 'now', $timezone = null)
         ];
     }
 }

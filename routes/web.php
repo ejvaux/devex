@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +24,11 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
+
+//Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::resources([
+    'products' => ProductController::class,
+]);
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');

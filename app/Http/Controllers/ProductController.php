@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use Inertia\Inertia;
+use URL;
 
 class ProductController extends Controller
 {
@@ -15,7 +17,18 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('Products/Index', [
+            'products' => Product::all()->map(function($product){
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'category' => $product->category,
+                    'description' => $product->description,
+                    'image' => asset('storage/',$product->image),
+                    'datetime' => $product->datetime,
+                ];
+            })
+        ]);
     }
 
     /**
@@ -25,7 +38,14 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Products/Create',[
+            'products' => Product::all()->map(function($product){
+                return [
+                    'id' => $product->id,
+                    'category' => $product->category,
+                ];
+            })
+        ]);
     }
 
     /**
