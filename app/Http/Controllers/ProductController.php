@@ -8,6 +8,7 @@ use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use Inertia\Inertia;
 use URL;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -20,13 +21,18 @@ class ProductController extends Controller
     {
         return Inertia::render('Products/Index', [
             'products' => Product::with('category')->get()->map(function($product){
+                $imgpath = [];
+                foreach (json_decode($product->image) as $image) {
+                    $imgpath[] = Storage::url($image);
+                }
                 return [
                     'id' => $product->id,
                     'name' => $product->name,
                     'category' => $product->category->name,
-                    'description' => $product->description,
-                    'image' => asset('storage/',$product->image),
+                    'description' => $product->description,                
+                    'image' => $imgpath,
                     'datetime' => $product->datetime,
+                    'edit_url' => 'products/'.$product->id.'/edit',
                 ];
             }),
             'categories' => Category::all(),
@@ -58,13 +64,10 @@ class ProductController extends Controller
             foreach($request->file('image') as $file)
             {
                 $name = $file->getClientOriginalName();
-                /*$file->move(public_path().'/uploads/', $name);  */
-                //$path = $file->store('public/images');
+                $path = $file->storeAs('public/images', $name);
                 $imgData[] = $path;
             }
         }
-
-        //$path = $request->file('image')->store('public/images');
 
         $product = new Product;
 
@@ -98,7 +101,10 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        //
+        return Inertia::render('Products/Edit',[
+            'product' => Product::find($product->id),
+            'categories' => Category::all(),
+        ]);
     }
 
     /**
@@ -110,7 +116,29 @@ class ProductController extends Controller
      */
     public function update(UpdateProductRequest $request, Product $product)
     {
-        //
+        $imgData = [];        
+
+        $product = Product::find($product->id);
+
+        $product->name = $request->name;
+        $product->category_id = $request->category_id;
+        $product->description = $request->description;
+
+        if($request->hasfile('image')){
+            foreach($request->file('image') as $file)
+            {
+                $name = $file->getClientOriginalName();
+                $path = $file->storeAs('public/images', $name);
+                $imgData[] = $path;
+            }
+            $product->image = json_encode($imgData);
+        }
+
+        $product->datetime = $request->datetime;
+
+        $product->save();
+
+        return redirect('/products');
     }
 
     /**

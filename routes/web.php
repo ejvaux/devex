@@ -26,9 +26,13 @@ Route::get('/', function () {
 });
 
 //Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-Route::resources([
-    'products' => ProductController::class,
-]);
+
+Route::group(['middleware' => 'auth'], function() {
+    Route::resources([
+        'products' => ProductController::class,
+    ]);
+});
+
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');

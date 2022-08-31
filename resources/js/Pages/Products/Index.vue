@@ -58,6 +58,7 @@
                                     <th scope="col">Description</th>
                                     <th scope="col">Date and Time</th>
                                     <th scope="col">Image</th>
+                                    <th scope="col"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -66,9 +67,22 @@
                                     <td>{{ product.name }}</td>
                                     <td>{{ product.category }}</td>
                                     <td>{{ product.description }}</td>
-                                    <td>{{ product.datetime }}</td>
+                                    <td>{{ product.datetime }} {{}}</td>
 
-                                    <td><img :src="product.image" class="h-12 w-12 rounded" /></td>
+                                    <td>
+                                        <div v-for="image in product.image">
+                                            <a :href="image" target="_blank">
+                                                <img :src="image" class="h-12 w-12 rounded" />
+                                            </a>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <a :href="product.edit_url" class="mt-1">
+                                            <BreezeButton type="button">
+                                                Edit
+                                            </BreezeButton>
+                                        </a>
+                                    </td>                                    
                                 </tr>
                             </tbody>
                         </table>

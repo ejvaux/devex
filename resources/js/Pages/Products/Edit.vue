@@ -4,29 +4,39 @@
     import BreezeInput from '@/Components/Input.vue';
     import BreezeInputError from '@/Components/InputError.vue';
     import BreezeLabel from '@/Components/Label.vue';
-    import { Head, Link, useForm } from '@inertiajs/inertia-vue3';
+    import { Head, Link, useForm } from '@inertiajs/inertia-vue3';   
+    import { Inertia } from '@inertiajs/inertia'
 
     const props = defineProps({
+        product: Object,
         categories: Array
     })
     const form = useForm({
-        name: null,
-        category_id: null,
-        description: null,
+        name: props.product.name,
+        category_id: props.product.category_id,
+        description: props.product.description,
         image: null,
-        datetime: null,
+        datetime: props.product.datetime,
     });
     const submit = () => {
-        form.post('/products');
+        Inertia.post('/products/'+props.product.id, {
+            _method: 'put',
+            name: form.name,
+            category_id: form.category_id,
+            description: form.description,
+            image: form.image,
+            datetime: form.datetime,
+        })
+        //form.post('/products/'+props.product.id);
     };
 </script>
 
 <template>
-    <Head title="Product Create" />
+    <Head title="Product Edit" />
     <BreezeAuthenticatedLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Create Product
+                Edit Product
             </h2>
         </template>
         <div class="py-3">
@@ -44,7 +54,7 @@
                         <form @submit.prevent="submit">
                             <div>
                                 <BreezeLabel for="name" value="Name" />
-                                <BreezeInput id="name" type="text" class="mt-1 block w-full" v-model="form.name" required autofocus autocomplete="product-name" />
+                                <BreezeInput id="name" type="text" class="mt-1 block w-full" v-model="form.name" required autocomplete="product-name" />
                                 <BreezeInputError class="mt-2" :message="form.errors.name" />
                             </div>
 
@@ -101,9 +111,11 @@
                             <div class="mt-4">
                                 <BreezeLabel for="datetime" value="Date and time" />
                                 <BreezeInput id="datetime" type="datetime-local" class="mt-1 block w-full" v-model="form.datetime" required autocomplete="product-datetime" />
+                                <progress v-if="form.progress" :value="form.progress.percentage" max="100">
+                                    {{ form.progress.percentage }}%
+                                </progress>
                                 <BreezeInputError class="mt-2" :message="form.errors.datetime" />
-                            </div>
-
+                            </div>                            
                             <div class="flex items-center justify-end mt-4">
                                 <BreezeButton class="ml-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                                     Submit
