@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Category;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use Inertia\Inertia;
@@ -18,16 +19,17 @@ class ProductController extends Controller
     public function index()
     {
         return Inertia::render('Products/Index', [
-            'products' => Product::all()->map(function($product){
+            'products' => Product::with('category')->get()->map(function($product){
                 return [
                     'id' => $product->id,
                     'name' => $product->name,
-                    'category' => $product->category,
+                    'category' => $product->category->name,
                     'description' => $product->description,
                     'image' => asset('storage/',$product->image),
                     'datetime' => $product->datetime,
                 ];
-            })
+            }),
+            'categories' => Category::all(),
         ]);
     }
 
@@ -39,12 +41,7 @@ class ProductController extends Controller
     public function create()
     {
         return Inertia::render('Products/Create',[
-            'products' => Product::all()->map(function($product){
-                return [
-                    'id' => $product->id,
-                    'category' => $product->category,
-                ];
-            })
+            'categories' => Category::all(),
         ]);
     }
 
@@ -56,7 +53,30 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
-        //
+        $imgData = [];
+        if($request->hasfile('image')){
+            foreach($request->file('image') as $file)
+            {
+                $name = $file->getClientOriginalName();
+                /*$file->move(public_path().'/uploads/', $name);  */
+                //$path = $file->store('public/images');
+                $imgData[] = $path;
+            }
+        }
+
+        //$path = $request->file('image')->store('public/images');
+
+        $product = new Product;
+
+        $product->name = $request->name;
+        $product->category_id = $request->category_id;
+        $product->description = $request->description;
+        $product->image = json_encode($imgData);
+        $product->datetime = $request->datetime;
+
+        $product->save();
+
+        return redirect('/products');
     }
 
     /**

@@ -3,7 +3,8 @@
     import BreezeButton from '@/Components/Button.vue';
     import { Head, Link  } from '@inertiajs/inertia-vue3';
     const props = defineProps({
-        products: Array
+        products: Array,
+        categories: Array
     })
 </script>
 
@@ -24,20 +25,19 @@
                         rounded-md
                         border-gray-300
                         shadow-sm
-                        focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50                  
+                        focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50
                     " placeholder="Search">
-
                     <select class="
                         rounded-md
                         border-gray-300
                         shadow-sm
                         focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50
-                    "                        
+                    "
                     >
-                    <option value="" selected>All Categories</option>
-                    <option v-for="product in products" :key="product.id" value="{{ product.category }}">
-                        {{ product.category }}
-                    </option>
+                        <option value="" selected>All Categories</option>
+                        <option v-for="category in categories" :key="category.id">
+                            {{ category.name }}
+                        </option>
                     </select>
                     <div class="grow"></div>
                     <Link href="/products/create" class="mt-1">
@@ -55,8 +55,8 @@
                                     <th scope="col">ID</th>
                                     <th scope="col">Name</th>
                                     <th scope="col">Category</th>
-                                    <th scope="col">Description</th>       
-                                    <th scope="col">Date and Time</th>                             
+                                    <th scope="col">Description</th>
+                                    <th scope="col">Date and Time</th>
                                     <th scope="col">Image</th>
                                 </tr>
                             </thead>
@@ -67,15 +67,15 @@
                                     <td>{{ product.category }}</td>
                                     <td>{{ product.description }}</td>
                                     <td>{{ product.datetime }}</td>
-                                    <td><img src="{{product.image}}" class="h-12 w-12 rounded" /></td>
+
+                                    <td><img :src="product.image" class="h-12 w-12 rounded" /></td>
                                 </tr>
                             </tbody>
                         </table>
                         <!-- ======================= -->
                     </div>
-                </div>                
+                </div>
             </div>
         </div>
     </BreezeAuthenticatedLayout>
 </template>
-    

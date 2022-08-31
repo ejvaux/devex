@@ -26,8 +26,8 @@ class ProductFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->unique()->word(),        
-            'category' => $this->faker->word(),
+            'name' => $this->faker->unique()->word(),
+            'category_id' => $this->faker->numberBetween(1, 2),
             'description' => $this->faker->sentence(),
             'image' => $this->faker->imageUrl($width = 640, $height = 480,'cats'),
             'datetime' => $this->faker->dateTime($max = 'now', $timezone = null)
