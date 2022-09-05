@@ -70,19 +70,19 @@
                                     <td>{{ product.datetime }} {{}}</td>
 
                                     <td>
-                                        <div v-for="image in product.image">
-                                            <a :href="image" target="_blank">
+
+                                            <a :href="image"  v-for="image in product.image" target="_blank">
                                                 <img :src="image" class="h-12 w-12 rounded" />
                                             </a>
-                                        </div>
+
                                     </td>
                                     <td>
-                                        <a :href="product.edit_url" class="mt-1">
+                                        <Link :href="product.edit_url" class="mt-1">
                                             <BreezeButton type="button">
                                                 Edit
                                             </BreezeButton>
-                                        </a>
-                                    </td>                                    
+                                        </Link>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
